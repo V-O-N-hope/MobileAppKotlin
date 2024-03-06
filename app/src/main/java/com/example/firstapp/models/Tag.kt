@@ -1,0 +1,27 @@
+package com.example.firstapp.models
+
+enum class Tag {
+    FICTION,
+    THRILLER,
+    ROMANCE,
+    FANTASY,
+    SCIENCE_FICTION,
+    CLASSICS,
+    DYSTOPIA,
+    RACISM,
+    ADVENTURE,
+    COMING_OF_AGE,
+    MAGIC,
+    PSYCHOLOGICAL,
+    SURVIVAL,
+    SPIRITUAL,
+    MAGICAL_REALISM,
+    HISTORICAL_FICTION,
+    GOTHIC,
+    WAR,
+    CONTEMPORARY,
+    YOUNG_ADULT,
+    HORROR,
+    FEMINISM,
+    MYSTERY
+}
