@@ -1,14 +1,13 @@
 package com.example.firstapp.activities.items
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.EditorInfo
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.ListAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.example.firstapp.activities.MainActivity
 import com.example.firstapp.activities.SignupActivity
 import com.example.firstapp.databinding.ActivitySearchItemBinding
 import com.example.firstapp.models.Book
@@ -51,6 +50,10 @@ class SearchItemActivity : AppCompatActivity() {
             startActivity(Intent(this, SignupActivity::class.java))
         }
 
+        binding.mainPageButton.setOnClickListener {
+            startActivity(Intent(this@SearchItemActivity, MainActivity::class.java))
+        }
+
         val dbBooksRef = FirebaseDatabase.getInstance().getReference("books")
 
         dbBooksRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -90,6 +93,16 @@ class SearchItemActivity : AppCompatActivity() {
             }
         })
 
+
+        binding.listview.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                val selectedItem = parent.getItemAtPosition(position) as String
+                startActivity(Intent(this@SearchItemActivity, CardWatchActivity::class.java).apply {
+                    putExtra("bookName", selectedItem)
+                    putExtra("backActivityName", "Search page")
+                    putExtra("backActivity", SearchItemActivity::class.java)
+                })
+            }
 
         binding.searchingStroke.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

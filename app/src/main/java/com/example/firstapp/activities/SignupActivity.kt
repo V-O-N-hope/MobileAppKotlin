@@ -40,7 +40,7 @@ class SignupActivity : AppCompatActivity() {
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
                                 //adding new user
-                                val db = FirebaseDatabase.getInstance().getReference("users")
+                                var db = FirebaseDatabase.getInstance().getReference("users")
 
                                 val user = User(
                                     name,
@@ -56,6 +56,9 @@ class SignupActivity : AppCompatActivity() {
                                 )
 
                                 db.child(firebaseAuth.currentUser!!.uid).setValue(user)
+
+                                db = FirebaseDatabase.getInstance().getReference("prefs")
+                                db.child(firebaseAuth.currentUser!!.uid).setValue(mutableListOf<String>())
 
                                 val intent = Intent(this, LoginActivity::class.java)
                                 startActivity(intent)
