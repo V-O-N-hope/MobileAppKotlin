@@ -3,6 +3,7 @@ package com.example.firstapp.activities.profile
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstapp.R
 import com.example.firstapp.activities.LoginActivity
@@ -93,6 +94,32 @@ class UserProfileActivity : AppCompatActivity() {
 
         binding.logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
+
+        binding.deleteProfile.setOnClickListener {
+            var dbToRemoveRef = FirebaseDatabase.getInstance().getReference("prefs/${currentUser.uid}")
+            dbToRemoveRef.removeValue()
+
+            dbToRemoveRef = FirebaseDatabase.getInstance().getReference("users/${currentUser.uid}")
+
+            dbToRemoveRef.removeValue()
+
+            val user = FirebaseAuth.getInstance().currentUser
+
+            FirebaseAuth.getInstance().signOut()
+
+
+            user?.delete()
+                ?.addOnSuccessListener {
+                    Toast.makeText(this, "All done, bye((", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
+                ?.addOnFailureListener { exception ->
+                    Toast.makeText(this, "error of deleting", Toast.LENGTH_SHORT).show()
+                }
+
             startActivity(Intent(this, LoginActivity::class.java))
         }
 

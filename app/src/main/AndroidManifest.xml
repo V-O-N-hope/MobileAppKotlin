@@ -14,7 +14,7 @@
         android:theme="@style/Theme.FirstApp"
         tools:targetApi="31">
         <activity
-            android:name=".activities.profile.PreferedUserBooksActivity"
+            android:name=".activities.profile.PreferredUserBooksActivity"
             android:exported="false" />
         <activity
             android:name=".activities.items.CardWatchActivity"

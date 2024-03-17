@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.firstapp.activities.items.SearchItemActivity
+import com.example.firstapp.activities.profile.PreferredUserBooksActivity
 import com.example.firstapp.activities.profile.UserProfileActivity
 import com.example.firstapp.databinding.ActivityMainBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -41,6 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.searchButton.setOnClickListener{
             startActivity(Intent(this, SearchItemActivity::class.java))
+        }
+
+        binding.favouritesButton.setOnClickListener{
+            startActivity(Intent(this, PreferredUserBooksActivity::class.java))
         }
 
         setContentView(binding.root)

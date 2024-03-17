@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.firstapp.R
 import com.example.firstapp.activities.SignupActivity
-import com.example.firstapp.activities.profile.PreferedUserBooksActivity
+import com.example.firstapp.activities.profile.PreferredUserBooksActivity
 import com.example.firstapp.databinding.ActivityCardWatchBinding
 import com.example.firstapp.models.Tag
 import com.google.firebase.auth.FirebaseAuth
@@ -20,7 +20,6 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ListResult
 import com.google.firebase.storage.StorageReference
-import java.io.File
 
 //class ImagesAdapter(
 //    val context: Context,
@@ -59,6 +58,8 @@ class CardWatchActivity : AppCompatActivity() {
         }
 
         val bookName = intent.getStringExtra("bookName")
+        val buttonScActionName = intent.getStringExtra("action")
+        val shouldDelete = buttonScActionName.equals("removing")
 
         val dbRef = FirebaseDatabase.getInstance().getReference("books/${bookName}")
 
@@ -100,12 +101,12 @@ class CardWatchActivity : AppCompatActivity() {
         val callbackActivity = if (buttonBackNameActivity.equals("Search page")) {
             SearchItemActivity::class.java
         } else {
-            PreferedUserBooksActivity::class.java
+            PreferredUserBooksActivity::class.java
         }
 
         val imagesRef = FirebaseStorage.getInstance().getReference("images").child(bookName!!)
 
-        val imageViews = Array<ImageView>(7){
+        val imageViews = Array<ImageView>(7) {
             binding.image1
         }
         imageViews[0] = binding.image1
@@ -132,7 +133,8 @@ class CardWatchActivity : AppCompatActivity() {
                         item.downloadUrl.addOnSuccessListener { uri ->
                             val imageUrl = uri.toString()
                             imageUrls.add(imageUrl)
-                            Glide.with(this).load(imageUrl).placeholder(R.drawable.bg).into(imageViews[i])
+                            Glide.with(this).load(imageUrl).placeholder(R.drawable.bg)
+                                .into(imageViews[i])
                             i += 1
                         }.addOnFailureListener { exception ->
 
@@ -150,6 +152,7 @@ class CardWatchActivity : AppCompatActivity() {
 
             dbRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+
                     val favourites = mutableListOf<String>()
 
                     if (snapshot.exists()) {
@@ -167,11 +170,37 @@ class CardWatchActivity : AppCompatActivity() {
                         favourites.add(bookName)
                         dbRef.setValue(favourites)
                             .addOnSuccessListener {
-                                Toast.makeText(this@CardWatchActivity, "All done", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@CardWatchActivity,
+                                    "All done",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             .addOnFailureListener { exception ->
-                                Toast.makeText(this@CardWatchActivity, exception.toString(), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@CardWatchActivity,
+                                    exception.toString(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
+                    }else if (favourites.contains(bookName) && shouldDelete){
+                        favourites.remove(bookName)
+                        dbRef.setValue(favourites)
+                            .addOnSuccessListener {
+                                Toast.makeText(
+                                    this@CardWatchActivity,
+                                    "Removed! ",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener { exception ->
+                                Toast.makeText(
+                                    this@CardWatchActivity,
+                                    exception.toString(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        startActivity(Intent(this@CardWatchActivity, PreferredUserBooksActivity::class.java))
                     }
                 }
 
@@ -182,6 +211,7 @@ class CardWatchActivity : AppCompatActivity() {
         }
 
         binding.searchPageButton.text = buttonBackNameActivity
+        binding.addToFavourites.text = buttonScActionName
 
         binding.searchPageButton.setOnClickListener {
             startActivity(Intent(this@CardWatchActivity, callbackActivity))
